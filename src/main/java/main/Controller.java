@@ -53,15 +53,14 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Setting up logging
         Log.setupLogger();
         logger.log(Level.INFO, "Controller initialization");
 
-        Circle circle = new Circle();
-        Rectangle rectangle = new Rectangle();
-        Triangle triangle = new Triangle();
-
-        templates = FXCollections.observableArrayList(circle, rectangle, triangle);
+        templates = FXCollections.observableArrayList(
+                new Circle(30),
+                new Rectangle(60, 40),
+                new Triangle(50)
+        );
         createdShapes = FXCollections.observableArrayList();
 
         listView.setItems(templates);
@@ -69,15 +68,8 @@ public class Controller implements Initializable {
 
         gc = canvas.getGraphicsContext2D();
 
-        createButton.setOnAction(event -> {
-            isMoving = false;
-            logger.log(Level.INFO, "Shape creation mode activated");
-        });
-
-        moveButton.setOnAction(event -> {
-            isMoving = true;
-            logger.log(Level.INFO, "Shape moving mode activated");
-        });
+        createButton.setOnAction(event -> isMoving = false);
+        moveButton.setOnAction(event -> isMoving = true);
 
         canvas.setOnMouseDragged(this::handleMouseDragged);
         canvas.setOnMouseReleased(this::handleMouseReleased);
@@ -89,10 +81,7 @@ public class Controller implements Initializable {
             createShape(event.getX(), event.getY());
         } else {
             selectedShape = findShapeAtPosition(event.getX(), event.getY());
-            if (selectedShape != null) {
-                isDragging = true;
-                logger.log(Level.INFO, "Shape selected for moving: " + selectedShape);
-            }
+            isDragging = selectedShape != null;
         }
     }
 
@@ -111,53 +100,29 @@ public class Controller implements Initializable {
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error creating shape", e);
             }
-        } else {
-            logger.log(Level.WARNING, "No shape selected for creation");
         }
     }
 
     private void handleMouseDragged(MouseEvent event) {
         if (isMoving && isDragging && selectedShape != null) {
-            try {
-                selectedShape.setPosition(event.getX(), event.getY());
-                redrawCanvas();
-                logger.log(Level.FINE, "Shape moved: " + selectedShape);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error moving shape", e);
-            }
+            selectedShape.setPosition(event.getX(), event.getY());
+            redrawCanvas();
         }
     }
 
     private void handleMouseReleased(MouseEvent event) {
         if (isMoving && isDragging && selectedShape != null) {
-            try {
-                memoSelect.saveState(new Momento(selectedShape));
-                isDragging = false;
-                logger.log(Level.INFO, "Shape moved and state saved: " + selectedShape);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error saving shape state", e);
-            }
+            memoSelect.saveState(new Momento(selectedShape));
+            isDragging = false;
         }
     }
 
     private Shape findShapeAtPosition(double x, double y) {
-        for (Shape shape : createdShapes) {
-            if (shape.contains(x, y)) {
-                return shape;
-            }
-        }
-        return null;
+        return createdShapes.stream().filter(shape -> shape.contains(x, y)).findFirst().orElse(null);
     }
 
     private void redrawCanvas() {
-        try {
-            gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-            for (Shape shape : createdShapes) {
-                shape.draw(gc);
-            }
-            logger.log(Level.FINE, "Canvas redrawn");
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error redrawing canvas", e);
-        }
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        createdShapes.forEach(shape -> shape.draw(gc));
     }
 }
