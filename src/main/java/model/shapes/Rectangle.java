@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 /**
  * Класс, представляющий прямоугольник.
  * @author Илья Чекрыгни
- * @version 1.1
+ * @version 1.0
  */
 public class Rectangle extends Shape {
     private final double width;

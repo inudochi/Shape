@@ -4,9 +4,8 @@ import javafx.scene.canvas.GraphicsContext;
 
 /**
  * Класс, представляющий круг.
- * Теперь радиус задается через конструктор.
  * @author Илья Чекрыгни
- * @version 1.1
+ * @version 1.0
  */
 public class Circle extends Shape {
     private final double radius;
