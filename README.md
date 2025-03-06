@@ -9,6 +9,6 @@
 ![Скриншот программы](https://github.com/user-attachments/assets/02e14c1a-c168-4f42-84e1-afb0546354ad)
 
 ## Архитектура
-![UML model](https://github.com/user-attachments/assets/bcc9036e-20ea-4728-afbb-04d8dfd27db2)
+![UML model](https://github.com/user-attachments/assets/e621c687-1de2-4d5e-92c2-29caacdd9ebd)
 
 
